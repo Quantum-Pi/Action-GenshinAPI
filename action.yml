@@ -1,0 +1,19 @@
+name: 'Genshin-Profile-Exporter'
+description: 'Exports the information of the specified users Genshin data, provided through EnkaNetwork & Akasha Systems'
+author: 'QuantumPie'
+
+inputs:
+  uuid:
+    description: 'UUID of the Genshin account'
+    required: true
+  usage:
+    description: 'Intended end-user use-case of this Action'
+    required: true
+
+outputs:
+  json:
+    description: 'Obtained information of the provided UUID'
+
+runs:
+  using: node20
+  main: dist/index.js
