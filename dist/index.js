@@ -35904,13 +35904,31 @@ async function run() {
         await enka.cachedAssetsManager.cacheDirectorySetup();
         await enka.cachedAssetsManager.fetchAllContents();
         const enkaUser = await enka.fetchUser(uuid);
-        console.log(enkaUser);
+        const enkaData = {
+            achievements: enkaUser.achievements,
+            level: enkaUser.level,
+            nickname: enkaUser.nickname,
+            showCharacterDetails: enkaUser.showCharacterDetails,
+            spiralAbyss: enkaUser.spiralAbyss,
+            uid: enkaUser.uid,
+            characters: enkaUser.characters,
+            maxFriendshipCount: enkaUser.maxFriendshipCount,
+            profileCard: enkaUser.profileCard,
+            showConstellationPreview: enkaUser.showConstellationPreview,
+            theater: enkaUser.theater,
+            url: enkaUser.url,
+            charactersPreview: enkaUser.charactersPreview,
+            profilePicture: enkaUser.profilePicture,
+            signature: enkaUser.signature,
+            worldLevel: enkaUser.worldLevel
+        };
+        console.log(enkaData);
         const akashaUser = await akasha.getCalculationsForUser(uuid);
         console.log(akashaUser);
-        // const api = new SteamAPI(apiKey);
         const json = {
-            enka: enkaUser,
-            akasha: akashaUser
+            enka: enkaData,
+            akasha: akashaUser.data,
+            good: enkaUser.toGOOD()
         };
         core.setOutput('json', json);
     }
