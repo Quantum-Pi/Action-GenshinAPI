@@ -58,6 +58,7 @@ jobs:
               uses: ./
               with:
                   uuid: 605452914
+                  usage: 'Github Action Profile Fetch'
 
             - name: Print Output
               id: output
