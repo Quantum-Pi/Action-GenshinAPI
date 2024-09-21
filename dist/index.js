@@ -35904,6 +35904,7 @@ async function run() {
         await enka.cachedAssetsManager.cacheDirectorySetup();
         await enka.cachedAssetsManager.fetchAllContents();
         const enkaUser = await enka.fetchUser(uuid);
+        const good = enkaUser.toGOOD();
         const deleteRedundantKeys = (obj) => {
             if (obj && typeof obj === 'object') {
                 delete obj['enka'];
@@ -35939,7 +35940,7 @@ async function run() {
         const json = {
             enka: enkaData,
             akasha: akashaUser.data,
-            good: enkaUser.toGOOD()
+            good
         };
         core.setOutput('json', json);
     }

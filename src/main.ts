@@ -17,6 +17,7 @@ export async function run(): Promise<void> {
 		await enka.cachedAssetsManager.fetchAllContents();
 
 		const enkaUser = await enka.fetchUser(uuid);
+		const good = enkaUser.toGOOD();
 
 		const deleteRedundantKeys = (obj: Record<string, any> | null): Record<string, any> | null => {
 			if (obj && typeof obj === 'object') {
@@ -55,7 +56,7 @@ export async function run(): Promise<void> {
 		const json = {
 			enka: enkaData,
 			akasha: akashaUser.data,
-			good: enkaUser.toGOOD()
+			good
 		};
 
 		core.setOutput('json', json);
