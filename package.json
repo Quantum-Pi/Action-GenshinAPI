@@ -1,16 +1,16 @@
 {
 	"name": "steam-profile-exporter-action",
 	"description": "GitHub Actions Steam Profile Exporter",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"author": "QuantumPie",
 	"private": true,
-	"homepage": "https://github.com/actions/typescript-action",
+	"homepage": "https://github.com/Quantum-Pi/Action-GenshinAPI",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/actions/typescript-action.git"
+		"url": "git+https://github.com/Quantum-Pi/Action-GenshinAPI.git"
 	},
 	"bugs": {
-		"url": "https://github.com/actions/typescript-action/issues"
+		"url": "https://github.com/Quantum-Pi/Action-GenshinAPI/issues"
 	},
 	"keywords": [
 		"actions",
