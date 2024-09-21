@@ -3,17 +3,17 @@ description: 'Exports the information of the specified users Genshin data, provi
 author: 'QuantumPie'
 
 inputs:
-  uuid:
-    description: 'UUID of the Genshin account'
-    required: true
-  usage:
-    description: 'Intended end-user use-case of this Action'
-    required: true
+    uuid:
+        description: 'UUID of the Genshin account'
+        required: true
+    usage:
+        description: 'Intended end-user use-case of this Action'
+        required: true
 
 outputs:
-  json:
-    description: 'Obtained information of the provided UUID'
+    json:
+        description: 'Obtained information of the provided UUID'
 
 runs:
-  using: node20
-  main: dist/index.js
+    using: node20
+    main: dist/index.js
