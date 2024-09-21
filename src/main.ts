@@ -12,27 +12,38 @@ export async function run(): Promise<void> {
 		const usage: string = core.getInput('usage');
 
 		const akasha = new Akasha(usage);
-		const enka = new EnkaClient();
+		const enka = new EnkaClient({ userAgent: usage });
 		await enka.cachedAssetsManager.cacheDirectorySetup();
 		await enka.cachedAssetsManager.fetchAllContents();
 
 		const enkaUser = await enka.fetchUser(uuid);
 
+		const deleteRedundantKeys = (obj: Record<string, any> | null): Record<string, any> | null => {
+			if (obj && typeof obj === 'object') {
+				delete obj['enka'];
+				Object.keys(obj).forEach(key => {
+					if (typeof obj === 'object') {
+						deleteRedundantKeys(obj[key]);
+					}
+				});
+			}
+			return obj;
+		};
 		const enkaData = {
 			achievements: enkaUser.achievements,
 			level: enkaUser.level,
 			nickname: enkaUser.nickname,
 			showCharacterDetails: enkaUser.showCharacterDetails,
-			spiralAbyss: enkaUser.spiralAbyss,
+			spiralAbyss: deleteRedundantKeys(enkaUser.spiralAbyss),
 			uid: enkaUser.uid,
-			characters: enkaUser.characters,
+			characters: deleteRedundantKeys(enkaUser.characters),
 			maxFriendshipCount: enkaUser.maxFriendshipCount,
-			profileCard: enkaUser.profileCard,
+			profileCard: deleteRedundantKeys(enkaUser.profileCard),
 			showConstellationPreview: enkaUser.showConstellationPreview,
-			theater: enkaUser.theater,
+			theater: deleteRedundantKeys(enkaUser.theater),
 			url: enkaUser.url,
-			charactersPreview: enkaUser.charactersPreview,
-			profilePicture: enkaUser.profilePicture,
+			charactersPreview: deleteRedundantKeys(enkaUser.charactersPreview),
+			profilePicture: deleteRedundantKeys(enkaUser.profilePicture),
 			signature: enkaUser.signature,
 			worldLevel: enkaUser.worldLevel
 		};
