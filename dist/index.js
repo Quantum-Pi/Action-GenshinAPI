@@ -35901,8 +35901,8 @@ async function run() {
         const usage = core.getInput('usage');
         const akasha = new akasha_system_js_1.default(usage);
         const enka = new enka_network_api_1.EnkaClient();
-        // enka.cachedAssetsManager.cacheDirectorySetup();
-        // await enka.cachedAssetsManager.fetchAllContents();
+        await enka.cachedAssetsManager.cacheDirectorySetup();
+        await enka.cachedAssetsManager.fetchAllContents();
         const enkaUser = await enka.fetchUser(uuid);
         console.log(enkaUser);
         const akashaUser = await akasha.getCalculationsForUser(uuid);

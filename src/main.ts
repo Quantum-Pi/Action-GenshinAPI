@@ -13,8 +13,8 @@ export async function run(): Promise<void> {
 
 		const akasha = new Akasha(usage);
 		const enka = new EnkaClient();
-		// enka.cachedAssetsManager.cacheDirectorySetup();
-		// await enka.cachedAssetsManager.fetchAllContents();
+		await enka.cachedAssetsManager.cacheDirectorySetup();
+		await enka.cachedAssetsManager.fetchAllContents();
 
 		const enkaUser = await enka.fetchUser(uuid);
 		console.log(enkaUser);
