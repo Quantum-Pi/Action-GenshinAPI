@@ -9,6 +9,9 @@ inputs:
     usage:
         description: 'Intended end-user use-case of this Action'
         required: true
+    goodSrc:
+        description: 'Optional location of account GOOD data. Defaults to EnkaNetwork if undefined'
+        required: false
 
 outputs:
     json:
