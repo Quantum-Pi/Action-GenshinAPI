@@ -35910,7 +35910,11 @@ async function run() {
         const json = JSON.stringify({
             akasha: akashaUser.data,
             good: goodSrc ? good : good
-        });
+        })
+            .replace(/\\/g, '')
+            .replace(/('|\$|\(|\)|"|!)/g, '\\$1')
+            // eslint-disable-next-line no-control-regex
+            .replace(/[^\x00-\x7F]/g, '');
         core.setOutput('json', `import { IGOOD } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 export type AkashaSystemStats = Awaited<ReturnType<Akasha['getCalculationsForUser']>>['data'];
