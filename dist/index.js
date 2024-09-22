@@ -35899,50 +35899,27 @@ async function run() {
     try {
         const uuid = core.getInput('uuid');
         const usage = core.getInput('usage');
+        const goodSrc = core.getInput('goodSrc');
         const akasha = new akasha_system_js_1.default(usage);
         const enka = new enka_network_api_1.EnkaClient({ userAgent: usage });
         await enka.cachedAssetsManager.cacheDirectorySetup();
         await enka.cachedAssetsManager.fetchAllContents();
         const enkaUser = await enka.fetchUser(uuid);
         const good = enkaUser.toGOOD();
-        const deleteRedundantKeys = (obj) => {
-            if (obj && typeof obj === 'object') {
-                delete obj['enka'];
-                Object.keys(obj).forEach(key => {
-                    if (typeof obj === 'object') {
-                        deleteRedundantKeys(obj[key]);
-                    }
-                });
-            }
-            return obj;
-        };
-        const enkaData = {
-            achievements: enkaUser.achievements,
-            level: enkaUser.level,
-            nickname: enkaUser.nickname,
-            showCharacterDetails: enkaUser.showCharacterDetails,
-            spiralAbyss: deleteRedundantKeys(enkaUser.spiralAbyss),
-            uid: enkaUser.uid,
-            characters: deleteRedundantKeys(enkaUser.characters),
-            maxFriendshipCount: enkaUser.maxFriendshipCount,
-            profileCard: deleteRedundantKeys(enkaUser.profileCard),
-            showConstellationPreview: enkaUser.showConstellationPreview,
-            theater: deleteRedundantKeys(enkaUser.theater),
-            url: enkaUser.url,
-            charactersPreview: deleteRedundantKeys(enkaUser.charactersPreview),
-            profilePicture: deleteRedundantKeys(enkaUser.profilePicture),
-            signature: enkaUser.signature,
-            worldLevel: enkaUser.worldLevel
-        };
-        console.log(enkaData);
         const akashaUser = await akasha.getCalculationsForUser(uuid);
-        console.log(akashaUser);
-        const json = {
-            enka: enkaData,
+        const json = JSON.stringify({
             akasha: akashaUser.data,
-            good
-        };
-        core.setOutput('json', json);
+            good: goodSrc ? good : good
+        });
+        core.setOutput('json', `import { IGOOD } from 'enka-network-api';
+import Akasha from 'akasha-system.js';
+export type AkashaSystemStats = Awaited<ReturnType<Akasha['getCalculationsForUser']>>['data'];
+export interface GenshinProfile {
+		akasha: AkashaSystemStats;
+		good: IGOOD;
+}	
+export const genshinProfile: GenshinProfile = ${json};	
+`);
     }
     catch (error) {
         // Fail the workflow run if an error occurs
