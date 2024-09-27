@@ -35914,7 +35914,7 @@ async function run() {
                 calculations: {
                     short: fit.short,
                     name: fit.name,
-                    details: fit.details,
+                    details: fit.details.replaceAll('"', "'"),
                     weapon: fit.weapon.name,
                     ranking: fit.ranking,
                     outOf: fit.outOf

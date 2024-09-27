@@ -35,6 +35,7 @@
 		"package:watch": "npm run package -- --watch",
 		"test": "npx jest",
 		"dev": "act -W '.github/workflows/test.yml'",
+		"dev:format": "prettier --write genshin_raw.ts",
 		"all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
 	},
 	"license": "MIT",

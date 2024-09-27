@@ -29,3 +29,4 @@ jobs:
             - name: Write Output
               run: |
                   echo "${{ steps.genshin.outputs.json }}" > genshin_raw.ts
+                  npm run dev:format
