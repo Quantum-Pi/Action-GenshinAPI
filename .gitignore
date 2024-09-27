@@ -1,4 +1,5 @@
 # Dependency directory
+bin/act
 node_modules
 
 test.ts
