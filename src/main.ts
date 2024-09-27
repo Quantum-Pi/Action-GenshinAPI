@@ -23,23 +23,65 @@ export async function run(): Promise<void> {
 		const akashaUser = await akasha.getCalculationsForUser(uuid);
 
 		const json = JSON.stringify({
-			akasha: akashaUser.data,
+			akasha: akashaUser.data.map(({ calculations: { fit }, name, weapon: { flat, name: weaponName, icon: weaponIcon }, icon }) => ({
+				name,
+				icon,
+				calculations: {
+					short: fit.short,
+					name: fit.name,
+					details: fit.details,
+					weapon: fit.weapon.name,
+					ranking: fit.ranking,
+					outOf: fit.outOf
+				},
+				weapon: {
+					weaponStats: flat.weaponStats,
+					name: weaponName,
+					icon: weaponIcon
+				}
+			})),
 			good: goodSrc ? good : good
-		})
-			.replace(/\\/g, '')
-			.replace(/('|\$|\(|\)|"|!)/g, '\\$1')
-			// eslint-disable-next-line no-control-regex
-			.replace(/[^\x00-\x7F]/g, '');
+		});
+		// .replace(/\\/g, '')
+		// .replace(/('|\$|\(|\)|"|!)/g, '\\$1')
+		// // eslint-disable-next-line no-control-regex
+		// .replace(/[^\x00-\x7F]/g, '');
 
 		core.setOutput(
 			'json',
-			`import { IGOOD } from 'enka-network-api';
+			`import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
+export interface EnkaData {
+	characters: CharacterData[];
+	artifactSets: ArtifactSet[];
+	weapons: WeaponData[];
+	artifacts: ArtifactData[];
+}
+
+export interface MiniAkashaSystemStat {
+	name: string;
+	icon: string;
+	calculations: {
+		short: string;
+		name: string;
+		details: string;
+		weapon: string;
+		ranking: number;
+		outOf: number;
+	};
+	weapon: {
+		weaponStats: { stat: string; statValue: number }[];
+		name: string;
+		icon: string;
+	};
+}
+
 export type AkashaSystemStats = Awaited<ReturnType<Akasha['getCalculationsForUser']>>['data'];
 export interface GenshinProfile {
-		akasha: AkashaSystemStats;
-		good: IGOOD;
-}	
+	akasha: MiniAkashaSystemStat[];
+	good: IGOOD;
+}
+
 export const genshinProfile: GenshinProfile = ${json};	
 `
 		);

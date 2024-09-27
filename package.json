@@ -25,6 +25,7 @@
 	},
 	"scripts": {
 		"bundle": "npm run format:write && npm run package",
+		"build": "pnpm bundle",
 		"ci-test": "npx jest",
 		"coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
 		"format:write": "npx prettier --write .",
