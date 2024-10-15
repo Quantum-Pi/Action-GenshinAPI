@@ -1,7 +1,7 @@
 {
-	"name": "steam-profile-exporter-action",
-	"description": "GitHub Actions Steam Profile Exporter",
-	"version": "1.0.0",
+	"name": "genshin-account-exporter-action",
+	"description": "GitHub Actions Genshin Account Exporter",
+	"version": "2.3.0",
 	"author": "QuantumPie",
 	"private": true,
 	"homepage": "https://github.com/Quantum-Pi/Action-GenshinAPI",
@@ -70,7 +70,7 @@
 	},
 	"dependencies": {
 		"@actions/core": "^1.10.1",
-		"akasha-system.js": "^0.2.0",
+		"akasha-system.js": "^0.3.0",
 		"enka-network-api": "^4.6.0"
 	},
 	"devDependencies": {

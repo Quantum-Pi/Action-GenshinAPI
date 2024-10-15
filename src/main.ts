@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { EnkaClient } from 'enka-network-api';
+import { convertToGOODStatKey, EnkaClient, FightProp, getCharactersById, StatKey } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 
 /**
@@ -18,28 +18,56 @@ export async function run(): Promise<void> {
 		await enka.cachedAssetsManager.fetchAllContents();
 
 		const enkaUser = await enka.fetchUser(uuid);
+
 		const good = enkaUser.toGOOD();
 
 		const akashaUser = await akasha.getCalculationsForUser(uuid);
-
+		const akashaUserBuild = await akasha.getBuildsForUser(uuid);
+		const akashaData = akashaUser.data.map(data => {
+			const build = akashaUserBuild.data.find(v => v.characterId === data.characterId);
+			return {
+				...data,
+				stats: build?.stats,
+				element: build?.characterMetadata.element
+			};
+		});
 		const json = JSON.stringify({
-			akasha: akashaUser.data.map(({ calculations: { fit }, name, weapon: { flat, name: weaponName, icon: weaponIcon }, icon }) => ({
-				name,
-				icon,
-				calculations: {
-					short: fit.short,
-					name: fit.name,
-					details: fit.details.replaceAll('"', "'"),
-					weapon: fit.weapon.name,
-					ranking: fit.ranking,
-					outOf: fit.outOf
-				},
-				weapon: {
-					weaponStats: flat.weaponStats,
-					name: weaponName,
-					icon: weaponIcon
-				}
-			})),
+			akasha: akashaData.map(
+				async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats, element }) => ({
+					name,
+					icon,
+					stats,
+					element,
+					calculations: {
+						short: fit.short,
+						name: fit.name,
+						details: fit.details.replaceAll('"', "'"),
+						weapon: fit.weapon.name,
+						ranking: fit.ranking,
+						outOf: fit.outOf
+					},
+					weapon: {
+						weaponStats: flat.weaponStats.reduce(
+							(prev, { stat, statValue }) => ({
+								...prev,
+								[convertToGOODStatKey(stat.replace('_BASE', '') as FightProp)]: statValue
+							}),
+							{} as Record<StatKey, number>
+						),
+						name: weaponName,
+						icon: weaponIcon
+					},
+					character: getCharactersById(characterId, enka)[0]
+						.getStats(6, 90)
+						.reduce(
+							(prev, stat) => ({
+								...prev,
+								[convertToGOODStatKey(stat.fightProp.replace('_BASE', '') as FightProp)]: stat.getMultipliedValue()
+							}),
+							{} as Record<StatKey, number>
+						)
+				})
+			),
 			good: goodSrc ? good : good
 		})
 			.replace(/\\/g, '')
@@ -61,6 +89,8 @@ export interface EnkaData {
 export interface MiniAkashaSystemStat {
 	name: string;
 	icon: string;
+	element: string;
+	stats: Record<string, number>;
 	calculations: {
 		short: string;
 		name: string;
@@ -70,10 +100,11 @@ export interface MiniAkashaSystemStat {
 		outOf: number;
 	};
 	weapon: {
-		weaponStats: { stat: string; statValue: number }[];
+		weaponStats: Record<StatKey, number>;
 		name: string;
 		icon: string;
 	};
+	character: Record<StatKey, number>;
 }
 
 export type AkashaSystemStats = Awaited<ReturnType<Akasha['getCalculationsForUser']>>['data'];
