@@ -27,7 +27,13 @@ export async function run(): Promise<void> {
 			const build = akashaUserBuild.data.find(v => v.characterId === data.characterId);
 			return {
 				...data,
-				stats: build?.stats,
+				stats: Object.entries(build?.stats ?? {}).reduce(
+					(prev, [stat, value]) => ({
+						...prev,
+						[stat]: value.value ?? 0
+					}),
+					{}
+				),
 				element: build?.characterMetadata.element
 			};
 		});
@@ -79,7 +85,7 @@ export async function run(): Promise<void> {
 
 		core.setOutput(
 			'json',
-			`import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData } from 'enka-network-api';
+			`import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData, StatKey } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 export interface EnkaData {
 	characters: CharacterData[];
@@ -88,11 +94,30 @@ export interface EnkaData {
 	artifacts: ArtifactData[];
 }
 
+export type BuildStatKey =
+	| 'critRate'
+	| 'critDamage'
+	| 'energyRecharge'
+	| 'healingBonus'
+	| 'incomingHealingBonus'
+	| 'elementalMastery'
+	| 'physicalDamageBonus'
+	| 'geoDamageBonus'
+	| 'cryoDamageBonus'
+	| 'pyroDamageBonus'
+	| 'anemoDamageBonus'
+	| 'hydroDamageBonus'
+	| 'dendroDamageBonus'
+	| 'electroDamageBonus'
+	| 'maxHp'
+	| 'atk'
+	| 'def';
+
 export interface MiniAkashaSystemStat {
 	name: string;
 	icon: string;
 	element: string;
-	stats: Record<string, number>;
+	stats: Record<BuildStatKey, number>;
 	calculations: {
 		short: string;
 		name: string;
@@ -102,11 +127,11 @@ export interface MiniAkashaSystemStat {
 		outOf: number;
 	};
 	weapon: {
-		weaponStats: Record<StatKey, number>;
+		weaponStats: Partial<Record<StatKey, number>>;
 		name: string;
 		icon: string;
 	};
-	character: Record<StatKey, number>;
+	character: Partial<Record<StatKey, number>>;
 }
 
 export type AkashaSystemStats = Awaited<ReturnType<Akasha['getCalculationsForUser']>>['data'];
