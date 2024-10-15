@@ -32,41 +32,43 @@ export async function run(): Promise<void> {
 			};
 		});
 		const json = JSON.stringify({
-			akasha: akashaData.map(
-				async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats, element }) => ({
-					name,
-					icon,
-					stats,
-					element,
-					calculations: {
-						short: fit.short,
-						name: fit.name,
-						details: fit.details.replaceAll('"', "'"),
-						weapon: fit.weapon.name,
-						ranking: fit.ranking,
-						outOf: fit.outOf
-					},
-					weapon: {
-						weaponStats: flat.weaponStats.reduce(
-							(prev, { stat, statValue }) => ({
-								...prev,
-								[convertToGOODStatKey(stat.replace('_BASE', '') as FightProp)]: statValue
-							}),
-							{} as Record<StatKey, number>
-						),
-						name: weaponName,
-						icon: weaponIcon
-					},
-					character: getCharactersById(characterId, enka)[0]
-						.getStats(6, 90)
-						.reduce(
-							(prev, stat) => ({
-								...prev,
-								[convertToGOODStatKey(stat.fightProp.replace('_BASE', '') as FightProp)]: stat.getMultipliedValue()
-							}),
-							{} as Record<StatKey, number>
-						)
-				})
+			akasha: await Promise.all(
+				akashaData.map(
+					async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats, element }) => ({
+						name,
+						icon,
+						stats,
+						element,
+						calculations: {
+							short: fit.short,
+							name: fit.name,
+							details: fit.details.replaceAll('"', "'"),
+							weapon: fit.weapon.name,
+							ranking: fit.ranking,
+							outOf: fit.outOf
+						},
+						weapon: {
+							weaponStats: flat.weaponStats.reduce(
+								(prev, { stat, statValue }) => ({
+									...prev,
+									[convertToGOODStatKey(stat.replace('_BASE', '') as FightProp)]: statValue
+								}),
+								{} as Record<StatKey, number>
+							),
+							name: weaponName,
+							icon: weaponIcon
+						},
+						character: getCharactersById(characterId, enka)[0]
+							.getStats(6, 90)
+							.reduce(
+								(prev, stat) => ({
+									...prev,
+									[convertToGOODStatKey(stat.fightProp.replace('_BASE', '') as FightProp)]: stat.getMultipliedValue()
+								}),
+								{} as Record<StatKey, number>
+							)
+					})
+				)
 			),
 			good: goodSrc ? good : good
 		})

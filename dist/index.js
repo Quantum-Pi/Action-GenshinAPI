@@ -35927,7 +35927,7 @@ async function run() {
             };
         });
         const json = JSON.stringify({
-            akasha: akashaData.map(async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats, element }) => ({
+            akasha: await Promise.all(akashaData.map(async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats, element }) => ({
                 name,
                 icon,
                 stats,
@@ -35954,7 +35954,7 @@ async function run() {
                     ...prev,
                     [(0, enka_network_api_1.convertToGOODStatKey)(stat.fightProp.replace('_BASE', ''))]: stat.getMultipliedValue()
                 }), {})
-            })),
+            }))),
             good: goodSrc ? good : good
         })
             .replace(/\\/g, '')
