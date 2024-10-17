@@ -61,6 +61,7 @@ export async function run(): Promise<void> {
 								}),
 								{} as Record<StatKey, number>
 							),
+							stars: flat.stars,
 							name: weaponName,
 							icon: weaponIcon
 						},
@@ -129,6 +130,7 @@ export interface MiniAkashaSystemStat {
 	weapon: {
 		weaponStats: Partial<Record<StatKey, number>>;
 		name: string;
+		stars: number;
 		icon: string;
 	};
 	character: Partial<Record<StatKey, number>>;

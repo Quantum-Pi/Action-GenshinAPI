@@ -35948,6 +35948,7 @@ async function run() {
                         ...prev,
                         [(0, enka_network_api_1.convertToGOODStatKey)(stat.replace('_BASE', ''))]: statValue
                     }), {}),
+                    stars: flat.stars,
                     name: weaponName,
                     icon: weaponIcon
                 },
@@ -36008,6 +36009,7 @@ export interface MiniAkashaSystemStat {
 	weapon: {
 		weaponStats: Partial<Record<StatKey, number>>;
 		name: string;
+		stars: number;
 		icon: string;
 	};
 	character: Partial<Record<StatKey, number>>;

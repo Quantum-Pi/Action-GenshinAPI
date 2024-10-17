@@ -18,5 +18,5 @@ outputs:
         description: 'Obtained information of the provided UUID'
 
 runs:
-    using: node20
+    using: node16
     main: dist/index.js
