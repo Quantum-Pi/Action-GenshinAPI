@@ -35925,16 +35925,14 @@ async function run() {
                 stats: Object.entries(build?.stats ?? {}).reduce((prev, [stat, value]) => ({
                     ...prev,
                     [stat]: value.value ?? 0
-                }), {}),
-                element: build?.characterMetadata.element
+                }), {})
             };
         });
         const json = JSON.stringify({
-            akasha: await Promise.all(akashaData.map(async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats, element }) => ({
+            akasha: await Promise.all(akashaData.map(async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats }) => ({
                 name,
                 icon,
                 stats,
-                element,
                 calculations: {
                     short: fit.short,
                     name: fit.name,
@@ -35959,13 +35957,21 @@ async function run() {
                     [(0, enka_network_api_1.convertToGOODStatKey)(stat.fightProp.replace('_BASE', ''))]: stat.getMultipliedValue()
                 }), {})
             }))),
-            good: goodSrc ? good : good
+            good: goodSrc ? good : good,
+            characters: enka.getAllCharacters().reduce((prev, { name, element, rarity, stars, weaponType }) => ({
+                ...prev,
+                [name.get('en')]: {
+                    element: element?.name.get('en'),
+                    stars,
+                    weaponType: weaponType
+                }
+            }), {})
         })
             .replace(/\\/g, '')
             .replace(/('|\$|\(|\)|"|!)/g, '\\$1')
             // // eslint-disable-next-line no-control-regex
             .replace(/[^\x00-\x7F]/g, '');
-        core.setOutput('json', `import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData, StatKey } from 'enka-network-api';
+        core.setOutput('json', `import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData, StatKey, WeaponType } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 export interface EnkaData {
 	characters: CharacterData[];
@@ -36015,10 +36021,17 @@ export interface MiniAkashaSystemStat {
 	character: Partial<Record<StatKey, number>>;
 }
 
+export interface CharacterRecord {
+    element?: string;
+	stars: number;
+	weaponType: WeaponType;
+}
+
 export type AkashaSystemStats = Awaited<ReturnType<Akasha['getCalculationsForUser']>>['data'];
 export interface GenshinProfile {
 	akasha: MiniAkashaSystemStat[];
 	good: IGOOD;
+	characters: Record<string, CharacterRecord>;
 }
 
 export const genshinProfile: GenshinProfile = ${json};	

@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { convertToGOODStatKey, EnkaClient, FightProp, getCharactersById, StatKey } from 'enka-network-api';
+import { convertToGOODStatKey, EnkaClient, FightProp, getCharactersById, StatKey, WeaponType } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 
 /**
@@ -33,51 +33,58 @@ export async function run(): Promise<void> {
 						[stat]: value.value ?? 0
 					}),
 					{}
-				),
-				element: build?.characterMetadata.element
+				)
 			};
 		});
 		const json = JSON.stringify({
 			akasha: await Promise.all(
-				akashaData.map(
-					async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats, element }) => ({
-						name,
-						icon,
-						stats,
-						element,
-						calculations: {
-							short: fit.short,
-							name: fit.name,
-							details: fit.details.replaceAll('"', "'"),
-							weapon: fit.weapon.name,
-							ranking: fit.ranking,
-							outOf: fit.outOf
-						},
-						weapon: {
-							weaponStats: flat.weaponStats.reduce(
-								(prev, { stat, statValue }) => ({
-									...prev,
-									[convertToGOODStatKey(stat.replace('_BASE', '') as FightProp)]: statValue
-								}),
-								{} as Record<StatKey, number>
-							),
-							stars: flat.stars,
-							name: weaponName,
-							icon: weaponIcon
-						},
-						character: getCharactersById(characterId, enka)[0]
-							.getStats(6, 90)
-							.reduce(
-								(prev, stat) => ({
-									...prev,
-									[convertToGOODStatKey(stat.fightProp.replace('_BASE', '') as FightProp)]: stat.getMultipliedValue()
-								}),
-								{} as Record<StatKey, number>
-							)
-					})
-				)
+				akashaData.map(async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats }) => ({
+					name,
+					icon,
+					stats,
+					calculations: {
+						short: fit.short,
+						name: fit.name,
+						details: fit.details.replaceAll('"', "'"),
+						weapon: fit.weapon.name,
+						ranking: fit.ranking,
+						outOf: fit.outOf
+					},
+					weapon: {
+						weaponStats: flat.weaponStats.reduce(
+							(prev, { stat, statValue }) => ({
+								...prev,
+								[convertToGOODStatKey(stat.replace('_BASE', '') as FightProp)]: statValue
+							}),
+							{} as Record<StatKey, number>
+						),
+						stars: flat.stars,
+						name: weaponName,
+						icon: weaponIcon
+					},
+					character: getCharactersById(characterId, enka)[0]
+						.getStats(6, 90)
+						.reduce(
+							(prev, stat) => ({
+								...prev,
+								[convertToGOODStatKey(stat.fightProp.replace('_BASE', '') as FightProp)]: stat.getMultipliedValue()
+							}),
+							{} as Record<StatKey, number>
+						)
+				}))
 			),
-			good: goodSrc ? good : good
+			good: goodSrc ? good : good,
+			characters: enka.getAllCharacters().reduce(
+				(prev, { name, element, rarity, stars, weaponType }) => ({
+					...prev,
+					[name.get('en')]: {
+						element: element?.name.get('en'),
+						stars,
+						weaponType: weaponType
+					}
+				}),
+				{} as Record<string, { element: string | undefined; stars: number; weaponType: WeaponType }>
+			)
 		})
 			.replace(/\\/g, '')
 			.replace(/('|\$|\(|\)|"|!)/g, '\\$1')
@@ -86,7 +93,7 @@ export async function run(): Promise<void> {
 
 		core.setOutput(
 			'json',
-			`import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData, StatKey } from 'enka-network-api';
+			`import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData, StatKey, WeaponType } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 export interface EnkaData {
 	characters: CharacterData[];
@@ -136,10 +143,17 @@ export interface MiniAkashaSystemStat {
 	character: Partial<Record<StatKey, number>>;
 }
 
+export interface CharacterRecord {
+    element?: string;
+	stars: number;
+	weaponType: WeaponType;
+}
+
 export type AkashaSystemStats = Awaited<ReturnType<Akasha['getCalculationsForUser']>>['data'];
 export interface GenshinProfile {
 	akasha: MiniAkashaSystemStat[];
 	good: IGOOD;
+	characters: Record<string, CharacterRecord>;
 }
 
 export const genshinProfile: GenshinProfile = ${json};	
