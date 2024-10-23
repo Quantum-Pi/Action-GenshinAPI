@@ -77,7 +77,7 @@ export async function run(): Promise<void> {
 			characters: enka.getAllCharacters().reduce(
 				(prev, { name, element, rarity, stars, weaponType }) => ({
 					...prev,
-					[name.get('en')]: {
+					[name.get('en').replaceAll(' ', '')]: {
 						element: element?.name.get('en'),
 						stars,
 						weaponType: weaponType
@@ -124,7 +124,6 @@ export type BuildStatKey =
 export interface MiniAkashaSystemStat {
 	name: string;
 	icon: string;
-	element: string;
 	stats: Record<BuildStatKey, number>;
 	calculations: {
 		short: string;
