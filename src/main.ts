@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { convertToGOODStatKey, EnkaClient, FightProp, getCharactersById, StatKey, WeaponType } from 'enka-network-api';
+import { convertToGOODKey, convertToGOODStatKey, EnkaClient, FightProp, getCharactersById, StatKey, WeaponType } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 
 /**
@@ -86,9 +86,9 @@ export async function run(): Promise<void> {
 				{} as Record<string, { element: string | undefined; stars: number; weaponType: WeaponType }>
 			),
 			weapons: enka.getAllWeapons(true).reduce(
-				(prev, { name, stars, weaponType, getStats, getAscensionData }) => ({
+				(prev, { name, stars, weaponType }) => ({
 					...prev,
-					[name.get('en').replaceAll(' ', '')]: {
+					[convertToGOODKey(name.get('en'))]: {
 						stars,
 						weaponType
 					}

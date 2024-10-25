@@ -35966,9 +35966,9 @@ async function run() {
                     weaponType: weaponType
                 }
             }), {}),
-            weapons: enka.getAllWeapons(true).reduce((prev, { name, stars, weaponType, getStats, getAscensionData }) => ({
+            weapons: enka.getAllWeapons(true).reduce((prev, { name, stars, weaponType }) => ({
                 ...prev,
-                [name.get('en').replaceAll(' ', '')]: {
+                [(0, enka_network_api_1.convertToGOODKey)(name.get('en'))]: {
                     stars,
                     weaponType
                 }
