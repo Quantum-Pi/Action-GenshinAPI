@@ -1,7 +1,7 @@
 {
 	"name": "genshin-account-exporter-action",
 	"description": "GitHub Actions Genshin Account Exporter",
-	"version": "2.3.5",
+	"version": "2.3.6",
 	"author": "QuantumPie",
 	"private": true,
 	"homepage": "https://github.com/Quantum-Pi/Action-GenshinAPI",

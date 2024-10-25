@@ -35965,6 +35965,13 @@ async function run() {
                     stars,
                     weaponType: weaponType
                 }
+            }), {}),
+            weapons: enka.getAllWeapons(true).reduce((prev, { name, stars, weaponType, getStats, getAscensionData }) => ({
+                ...prev,
+                [name.get('en').replaceAll(' ', '')]: {
+                    stars,
+                    weaponType
+                }
             }), {})
         })
             .replace(/\\/g, '')
@@ -36026,11 +36033,17 @@ export interface CharacterRecord {
 	weaponType: WeaponType;
 }
 
+export interface WeaponRecord {
+	stars: number;
+	weaponType: WeaponType;
+}
+
 export type AkashaSystemStats = Awaited<ReturnType<Akasha['getCalculationsForUser']>>['data'];
 export interface GenshinProfile {
 	akasha: MiniAkashaSystemStat[];
 	good: IGOOD;
 	characters: Record<string, CharacterRecord>;
+	weapons: Record<string, WeaponRecord>;
 }
 
 export const genshinProfile: GenshinProfile = ${json};	
