@@ -6,11 +6,23 @@ import Akasha from 'akasha-system.js';
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-export async function run(): Promise<void> {
+type Options =
+	| {
+			local: true;
+			uuid: string;
+			cb: (output: string) => void;
+	  }
+	| {
+			local: false;
+	  };
+
+export async function run(opt: Options = { local: false }): Promise<void> {
 	try {
-		const uuid: string = core.getInput('uuid');
-		const usage: string = core.getInput('usage');
-		const goodSrc: string | null = core.getInput('goodSrc');
+		const { local } = opt;
+
+		const uuid: string = local ? opt.uuid : core.getInput('uuid');
+		const usage: string = local ? 'testing' : core.getInput('usage');
+		const goodSrc: string | null = local ? null : core.getInput('goodSrc');
 
 		const akasha = new Akasha(usage);
 		const enka = new EnkaClient({ userAgent: usage });
@@ -101,9 +113,7 @@ export async function run(): Promise<void> {
 			// // eslint-disable-next-line no-control-regex
 			.replace(/[^\x00-\x7F]/g, '');
 
-		core.setOutput(
-			'json',
-			`import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData, StatKey, WeaponType } from 'enka-network-api';
+		const output = `import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData, StatKey, WeaponType } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 export interface EnkaData {
 	characters: CharacterData[];
@@ -172,8 +182,8 @@ export interface GenshinProfile {
 }
 
 export const genshinProfile: GenshinProfile = ${json};	
-`
-		);
+`;
+		local ? opt.cb(output) : core.setOutput('json', output);
 	} catch (error) {
 		// Fail the workflow run if an error occurs
 		if (error instanceof Error) core.setFailed(error.message);

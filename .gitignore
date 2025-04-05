@@ -2,7 +2,6 @@
 bin/act
 node_modules
 
-test.ts
 output.ts
 
 # Rest pulled from https://github.com/github/gitignore/blob/master/Node.gitignore
