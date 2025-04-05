@@ -8,13 +8,13 @@ import Akasha from 'akasha-system.js';
  */
 type Options =
 	| {
-			local: true;
-			uuid: string;
-			cb: (output: string) => void;
-	  }
+		local: true;
+		uuid: string;
+		cb: (output: string) => void;
+	}
 	| {
-			local: false;
-	  };
+		local: false;
+	};
 
 export async function run(opt: Options = { local: false }): Promise<void> {
 	try {
