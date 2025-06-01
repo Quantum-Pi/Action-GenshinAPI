@@ -107,11 +107,11 @@ export async function run(opt: Options = { local: false }): Promise<void> {
 				}),
 				{}
 			)
-		}
-			// .replace(/\\/g, '')
-			// .replace(/('|\$|\(|\)|"|!)/g, '\\$1')
-			// // // eslint-disable-next-line no-control-regex
-			// .replace(/[^\x00-\x7F]/g, '');
+		};
+		// .replace(/\\/g, '')
+		// .replace(/('|\$|\(|\)|"|!)/g, '\\$1')
+		// // // eslint-disable-next-line no-control-regex
+		// .replace(/[^\x00-\x7F]/g, '');
 		const output = `import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData, StatKey, WeaponType } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 export interface EnkaData {
