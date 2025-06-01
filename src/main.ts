@@ -48,7 +48,7 @@ export async function run(opt: Options = { local: false }): Promise<void> {
 				)
 			};
 		});
-		const json = JSON.stringify({
+		const json = {
 			akasha: await Promise.all(
 				akashaData.map(async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats }) => ({
 					name,
@@ -107,12 +107,11 @@ export async function run(opt: Options = { local: false }): Promise<void> {
 				}),
 				{}
 			)
-		})
-			.replace(/\\/g, '')
-			.replace(/('|\$|\(|\)|"|!)/g, '\\$1')
-			// // eslint-disable-next-line no-control-regex
-			.replace(/[^\x00-\x7F]/g, '');
-
+		}
+			// .replace(/\\/g, '')
+			// .replace(/('|\$|\(|\)|"|!)/g, '\\$1')
+			// // // eslint-disable-next-line no-control-regex
+			// .replace(/[^\x00-\x7F]/g, '');
 		const output = `import { IGOOD, CharacterData, ArtifactData, ArtifactSet, WeaponData, StatKey, WeaponType } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
 export interface EnkaData {
@@ -144,7 +143,7 @@ export type BuildStatKey =
 export interface MiniAkashaSystemStat {
 	name: string;
 	icon: string;
-	stats: Record<BuildStatKey, number>;
+	stats: Record<BuildStatKey, number> | {};
 	calculations: {
 		short: string;
 		name: string;
@@ -181,7 +180,7 @@ export interface GenshinProfile {
 	weapons: Record<string, WeaponRecord>;
 }
 
-export const genshinProfile: GenshinProfile = ${json};	
+export const genshinProfile: GenshinProfile = ${JSON.stringify(json)};	
 `;
 		local ? opt.cb(output) : core.setOutput('json', output);
 	} catch (error) {
