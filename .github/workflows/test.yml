@@ -1,4 +1,6 @@
 name: Test Action
+env:
+    ACTIONS_STEP_DEBUG: true
 
 on:
     workflow_dispatch:
@@ -15,7 +17,7 @@ jobs:
             - name: Install Node.js
               uses: actions/setup-node@v3
               with:
-                  node-version: 20
+                  node-version: 21
 
             - name: Install dependencies
               run: npm install
@@ -26,7 +28,7 @@ jobs:
               with:
                   uuid: 605452914
                   usage: 'QuantumPie.net Genshin profile display'
+                  outputDir: 'data/'
             - name: Write Output
               run: |
-                  echo "${{ steps.genshin.outputs.json }}" > genshin_raw.ts
                   npm run dev:format

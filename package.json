@@ -1,7 +1,7 @@
 {
 	"name": "genshin-account-exporter-action",
 	"description": "GitHub Actions Genshin Account Exporter",
-	"version": "2.3.7",
+	"version": "3.0.0",
 	"author": "QuantumPie",
 	"private": true,
 	"homepage": "https://github.com/Quantum-Pi/Action-GenshinAPI",
@@ -36,7 +36,7 @@
 		"test": "npx jest",
 		"dev": "act -W '.github/workflows/test.yml'",
 		"local": "ts-node test/test-local.ts",
-		"dev:format": "prettier --write genshin_raw.ts",
+		"dev:format": "prettier --write data/genshin_raw.ts",
 		"all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
 	},
 	"license": "MIT",

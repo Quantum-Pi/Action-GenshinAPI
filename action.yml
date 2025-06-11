@@ -12,6 +12,9 @@ inputs:
     goodSrc:
         description: 'Optional location of account GOOD data. Defaults to EnkaNetwork if undefined'
         required: false
+    outputDir:
+        description: 'Directory to output the data to. Defaults to the root of the repository'
+        required: false
 
 outputs:
     json:

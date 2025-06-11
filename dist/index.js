@@ -38118,12 +38118,15 @@ exports.run = run;
 const core = __importStar(__nccwpck_require__(7484));
 const enka_network_api_1 = __nccwpck_require__(3586);
 const akasha_system_js_1 = __importDefault(__nccwpck_require__(921));
+const fs_1 = __nccwpck_require__(9896);
+const path_1 = __nccwpck_require__(6928);
 async function run(opt = { local: false }) {
     try {
         const { local } = opt;
         const uuid = local ? opt.uuid : core.getInput('uuid');
         const usage = local ? 'testing' : core.getInput('usage');
         const goodSrc = local ? null : core.getInput('goodSrc');
+        const outputDir = local ? process.cwd() : core.getInput('outputDir') || '';
         const akasha = new akasha_system_js_1.default(usage);
         const enka = new enka_network_api_1.EnkaClient({ userAgent: usage });
         await enka.cachedAssetsManager.cacheDirectorySetup();
@@ -38142,7 +38145,7 @@ async function run(opt = { local: false }) {
                 }), {})
             };
         });
-        const json = {
+        const json = JSON.stringify({
             akasha: await Promise.all(akashaData.map(async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats }) => ({
                 name,
                 icon,
@@ -38187,7 +38190,7 @@ async function run(opt = { local: false }) {
                     weaponType
                 }
             }), {})
-        };
+        });
         // .replace(/\\/g, '')
         // .replace(/('|\$|\(|\)|"|!)/g, '\\$1')
         // // // eslint-disable-next-line no-control-regex
@@ -38260,9 +38263,22 @@ export interface GenshinProfile {
 	weapons: Record<string, WeaponRecord>;
 }
 
-export const genshinProfile: GenshinProfile = ${JSON.stringify(json)};	
+export const genshinProfile: GenshinProfile = ${json};	
 `;
-        local ? opt.cb(output) : core.setOutput('json', output);
+        if (local) {
+            opt.cb(output);
+        }
+        else {
+            core.info(`Current directory: ${process.cwd()}`);
+            core.info(`Writing to path: ${(0, path_1.join)('./', outputDir, 'genshin_raw.ts')}`);
+            if (outputDir && !(0, fs_1.existsSync)(outputDir)) {
+                (0, fs_1.mkdirSync)(outputDir, { recursive: true });
+                core.info(`Created directory: ${outputDir}`);
+            }
+            (0, fs_1.writeFileSync)((0, path_1.join)('./', outputDir, 'genshin_raw.ts'), output);
+            core.info(`File written successfully`);
+            core.setOutput('json', JSON.stringify({ success: true, fileGenerated: 'genshin_raw.ts' }));
+        }
     }
     catch (error) {
         // Fail the workflow run if an error occurs

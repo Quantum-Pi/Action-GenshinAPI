@@ -1,6 +1,8 @@
 import * as core from '@actions/core';
 import { convertToGOODKey, convertToGOODStatKey, EnkaClient, FightProp, getCharactersById, StatKey, WeaponType } from 'enka-network-api';
 import Akasha from 'akasha-system.js';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 
 /**
  * The main function for the action.
@@ -23,6 +25,7 @@ export async function run(opt: Options = { local: false }): Promise<void> {
 		const uuid: string = local ? opt.uuid : core.getInput('uuid');
 		const usage: string = local ? 'testing' : core.getInput('usage');
 		const goodSrc: string | null = local ? null : core.getInput('goodSrc');
+		const outputDir: string = local ? process.cwd() : core.getInput('outputDir') || '';
 
 		const akasha = new Akasha(usage);
 		const enka = new EnkaClient({ userAgent: usage });
@@ -48,7 +51,7 @@ export async function run(opt: Options = { local: false }): Promise<void> {
 				)
 			};
 		});
-		const json = {
+		const json = JSON.stringify({
 			akasha: await Promise.all(
 				akashaData.map(async ({ calculations: { fit }, name, characterId, weapon: { flat, name: weaponName, icon: weaponIcon }, icon, stats }) => ({
 					name,
@@ -107,7 +110,7 @@ export async function run(opt: Options = { local: false }): Promise<void> {
 				}),
 				{}
 			)
-		};
+		});
 		// .replace(/\\/g, '')
 		// .replace(/('|\$|\(|\)|"|!)/g, '\\$1')
 		// // // eslint-disable-next-line no-control-regex
@@ -180,9 +183,23 @@ export interface GenshinProfile {
 	weapons: Record<string, WeaponRecord>;
 }
 
-export const genshinProfile: GenshinProfile = ${JSON.stringify(json)};	
+export const genshinProfile: GenshinProfile = ${json};	
 `;
-		local ? opt.cb(output) : core.setOutput('json', output);
+		if (local) {
+			opt.cb(output);
+		} else {
+			core.info(`Current directory: ${process.cwd()}`);
+			core.info(`Writing to path: ${join('./', outputDir, 'genshin_raw.ts')}`);
+
+			if (outputDir && !existsSync(outputDir)) {
+				mkdirSync(outputDir, { recursive: true });
+				core.info(`Created directory: ${outputDir}`);
+			}
+			writeFileSync(join('./', outputDir, 'genshin_raw.ts'), output);
+			core.info(`File written successfully`);
+
+			core.setOutput('json', JSON.stringify({ success: true, fileGenerated: 'genshin_raw.ts' }));
+		}
 	} catch (error) {
 		// Fail the workflow run if an error occurs
 		if (error instanceof Error) core.setFailed(error.message);

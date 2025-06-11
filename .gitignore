@@ -1,6 +1,7 @@
 # Dependency directory
 bin/act
 node_modules
+data/
 
 output.ts
 
