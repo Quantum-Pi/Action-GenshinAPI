@@ -31,12 +31,14 @@ export async function run(opt: Options = { local: false }): Promise<void> {
 		const enka = new EnkaClient({ userAgent: usage });
 		await enka.cachedAssetsManager.cacheDirectorySetup();
 		await enka.cachedAssetsManager.fetchAllContents();
+		core.info('Enka assets cached');
 
 		const enkaUser = await enka.fetchUser(uuid);
-
+		core.info(`Fetched Enka user data for ${enkaUser.nickname}`);
 		const good = enkaUser.toGOOD();
 
 		const akashaUser = await akasha.getCalculationsForUser(uuid);
+		core.info(`Fetched Akasha data for ${akashaUser.data.length} characters`);
 		const akashaUserBuild = await akasha.getBuildsForUser(uuid);
 		const akashaData = akashaUser.data.map(data => {
 			const build = akashaUserBuild.data.find(v => v.characterId === data.characterId);
